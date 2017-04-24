@@ -188,6 +188,8 @@ class Status < ApplicationRecord
 
     def filter_timeline(query, account)
       blocked = Rails.cache.fetch("exclude_account_ids_for:#{account.id}") { Block.where(account: account).pluck(:target_account_id) + Block.where(target_account: account).pluck(:account_id) + Mute.where(account: account).pluck(:target_account_id) }
+      domains = Rails.cache.fetch("exclude_domains_for:#{account_id}") { AccountDomainBlock.where(account: account).pluck(:domain) }
+      query   = query.where('accounts.domain NOT IN (?)', domains) unless domains.empty?
       query   = query.where('statuses.account_id NOT IN (?)', blocked) unless blocked.empty?  # Only give us statuses from people we haven't blocked, or muted, or that have blocked us
       query   = query.where('accounts.silenced = TRUE') if account.silenced?                  # and if we're hellbanned, only people who are also hellbanned
       query
