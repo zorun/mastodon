@@ -44,6 +44,18 @@ const initialState = Immutable.Map({
     items: Immutable.List()
   }),
 
+  remote: Immutable.Map({
+    path: () => 'https://mastodon.social/api/v1/timelines/public',
+    next: null,
+    params: { local: true },
+    isLoading: false,
+    online: false,
+    loaded: false,
+    top: true,
+    unread: 0,
+    items: Immutable.List()
+  }),
+
   public: Immutable.Map({
     path: () => '/api/v1/timelines/public',
     next: null,
